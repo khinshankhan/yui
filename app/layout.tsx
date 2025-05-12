@@ -16,7 +16,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(GeistSans.variable, GeistMono.variable, "bg-slate-200")}
+      className={cn(GeistSans.variable, GeistMono.variable, "bg-slate-100")}
       style={fontAliases}
     >
       <head></head>
