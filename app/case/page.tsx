@@ -22,8 +22,38 @@ const casings: {
   name: string
   transformer: (str: string) => string
 }[] = [
-  { name: "Upper Case", transformer: (str: string) => str.toUpperCase() },
-  { name: "Lower Case", transformer: (str: string) => str.toLowerCase() },
+  {
+    name: "Upper Case",
+    transformer: (str: string) => str.toUpperCase(),
+  },
+  {
+    name: "Lower Case",
+    transformer: (str) => str.toLowerCase(),
+  },
+  {
+    name: "Kebab Case",
+    transformer: (str) => str.split(" ").join("-"),
+  },
+  {
+    name: "Snake Case",
+    transformer: (str) => str.split(" ").join("_"),
+  },
+  {
+    name: "Camel Case",
+    transformer: (str) =>
+      str
+        .split(" ")
+        .map((w) => w.charAt(0).toLowerCase() + w.slice(1))
+        .join(""),
+  },
+  {
+    name: "Pascal Case",
+    transformer: (str) =>
+      str
+        .split(" ")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(""),
+  },
 ]
 
 export default function Page() {
