@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/khinshankhan/yui/cli/casecli"
+	"github.com/khinshankhan/yui/cli/netcli"
 	"github.com/spf13/cobra"
 )
 
@@ -16,8 +17,8 @@ func Execute() {
 
 func init() {
 	rootCmd.AddCommand(
-		casecli.
-			CreateCaseCmd([]string{"yui", "case"}),
+		casecli.CreateCaseCmd([]string{"yui", "case"}),
+		netcli.CreateNetCmd([]string{"yui", "net"}),
 	)
 }
 
