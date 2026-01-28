@@ -14,8 +14,8 @@ var caseCmd = &cobra.Command{
 	Use:   "case [modes] [input]",
 	Short: "Apply one or more casing transformations to input text",
 	Long: `Transforms input using one or more case modes, like:
-  yui-cli case lower kebab "Some Text"\
-  echo "Some Text" | yui-cli case kebab`,
+  yui case lower kebab "Some Text"\
+  echo "Some Text" | yui case kebab`,
 	Args: cobra.MinimumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
