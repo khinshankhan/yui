@@ -1,19 +1,16 @@
 package main
 
 import (
-	"github.com/khinshankhan/yui/cli/casecli"
+	"fmt"
+	"os"
 
-	"github.com/spf13/cobra"
+	"github.com/khinshankhan/yui/cmd/case/casecli"
 )
 
-func Execute() {
-	cobra.CheckErr(
-		casecli.
-			CreateCaseCmd([]string{"case"}).
-			Execute(),
-	)
-}
-
 func main() {
-	Execute()
+	if err := casecli.Run(os.Args[1:]); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n\n", err)
+		fmt.Fprintln(os.Stderr, casecli.Usage("case"))
+		os.Exit(1)
+	}
 }

@@ -1,19 +1,16 @@
 package main
 
 import (
-	"github.com/khinshankhan/yui/cli/netcli"
+	"fmt"
+	"os"
 
-	"github.com/spf13/cobra"
+	"github.com/khinshankhan/yui/cmd/net/netcli"
 )
 
-func Execute() {
-	cobra.CheckErr(
-		netcli.
-			CreateNetCmd([]string{"net"}).
-			Execute(),
-	)
-}
-
 func main() {
-	Execute()
+	if err := netcli.Run(os.Args[1:]); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n\n", err)
+		fmt.Fprintln(os.Stderr, netcli.Usage("net"))
+		os.Exit(1)
+	}
 }

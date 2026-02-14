@@ -1,19 +1,16 @@
 package main
 
 import (
-	"github.com/khinshankhan/yui/cli/colorcli"
+	"fmt"
+	"os"
 
-	"github.com/spf13/cobra"
+	"github.com/khinshankhan/yui/cmd/color/colorcli"
 )
 
-func Execute() {
-	cobra.CheckErr(
-		colorcli.
-			CreateColorCmd([]string{"color"}).
-			Execute(),
-	)
-}
-
 func main() {
-	Execute()
+	if err := colorcli.Run(os.Args[1:]); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n\n", err)
+		fmt.Fprintln(os.Stderr, colorcli.Usage("color"))
+		os.Exit(1)
+	}
 }
