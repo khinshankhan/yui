@@ -6,7 +6,26 @@ import (
 )
 
 func splitWords(str string) []string {
-	cleaned := strings.ToLower(strings.TrimSpace(str))
+	s := strings.TrimSpace(str)
+
+	// insert spaces at camelCase/PascalCase boundaries
+	var b strings.Builder
+	runes := []rune(s)
+	for i, r := range runes {
+		if i > 0 && unicode.IsUpper(r) {
+			prev := runes[i-1]
+			// aB -> a B (lowercase followed by uppercase)
+			if unicode.IsLower(prev) {
+				b.WriteRune(' ')
+			} else if unicode.IsUpper(prev) && i+1 < len(runes) && unicode.IsLower(runes[i+1]) {
+				// ABc -> A Bc (uppercase followed by lowercase)
+				b.WriteRune(' ')
+			}
+		}
+		b.WriteRune(r)
+	}
+
+	cleaned := strings.ToLower(b.String())
 	cleaned = strings.ReplaceAll(cleaned, "-", " ")
 	cleaned = strings.ReplaceAll(cleaned, "_", " ")
 	return strings.Fields(cleaned)
@@ -49,6 +68,8 @@ func Convert(input, mode string) string {
 			parts[i] = capitalize(parts[i])
 		}
 		return parts[0] + strings.Join(parts[1:], "")
+	case "words":
+		return strings.Join(splitWords(input), " ")
 	default:
 		return input
 	}
