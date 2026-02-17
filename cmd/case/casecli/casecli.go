@@ -1,6 +1,7 @@
 package casecli
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -9,19 +10,54 @@ import (
 	"github.com/khinshankhan/yui/lib/caseconv"
 )
 
-func Usage(app string) string {
-	return fmt.Sprintf(`Usage: %s [modes] [input]
+var ErrHelpRequested = errors.New("help requested")
 
-Apply one or more casing transformations to input text.
+func isHelpArg(arg string) bool {
+	switch arg {
+	case "help", "-h", "--help":
+		return true
+	default:
+		return false
+	}
+}
 
-Examples:
-  %s lower kebab "Some Text"
-  echo "Some Text" | %s kebab`, app, app, app)
+func Help(app string) string {
+	help := `%s - Text case conversion tools
+
+USAGE:
+    %s [flags] <text>
+    echo "text" | %s [flags]
+
+SUBCOMMANDS:
+    help             Show this help message
+
+CONVERSIONS:
+    lower      Convert to lowercase
+    upper      Convert to UPPERCASE
+    kebab      Convert to kebab-case
+    snake      Convert to snake_case
+    camel      Convert to camelCase
+    pascal     Convert to PascalCase
+
+CHAINING:
+    Chain multiple conversions by using multiple flags.
+    Conversions are applied left-to-right.
+
+EXAMPLES:
+    %s lower "Hello World"             # hello world
+    %s kebab "Hello World"             # hello-world
+    %s snake upper "Hello World"       # HELLO_WORLD
+    echo "Hello World" | %s kebab      # hello-world`
+
+	return strings.ReplaceAll(help, "%s", app)
 }
 
 func Run(args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("at least one argument is required")
+	}
+	if len(args) == 1 && isHelpArg(args[0]) {
+		return ErrHelpRequested
 	}
 
 	var (

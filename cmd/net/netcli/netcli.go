@@ -1,26 +1,54 @@
 package netcli
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/khinshankhan/yui/lib/nettools"
 )
 
-func Usage(app string) string {
-	return fmt.Sprintf(`Usage: %s <subcommand>
+var ErrHelpRequested = errors.New("help requested")
 
-Subcommands:
-  ip [primary|all]
+func isHelpArg(arg string) bool {
+	switch arg {
+	case "help", "-h", "--help":
+		return true
+	default:
+		return false
+	}
+}
 
-Examples:
-  %s ip
-  %s ip primary
-  %s ip all`, app, app, app, app)
+func Help(app string) string {
+	help := `%s - Network/IP tools
+
+USAGE:
+    %s <subcommand> [arguments]
+
+
+SUBCOMMANDS:
+    help               Show this help message
+
+    ip [type]          Get local IP addresses
+        primary, p     Get primary local IP (default)
+        all, a         Get all interfaces and IPs
+
+EXAMPLES:
+    %s help                      # Show help
+    %s ip                        # Get primary local IP
+    %s ip all                    # Get all IPs
+
+Use "%s <subcommand> help" for more information.`
+
+	return strings.ReplaceAll(help, "%s", app)
 }
 
 func Run(args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("subcommand required")
+	}
+	if isHelpArg(args[0]) {
+		return ErrHelpRequested
 	}
 
 	switch args[0] {
@@ -32,6 +60,10 @@ func Run(args []string) error {
 }
 
 func runIP(args []string) error {
+	if len(args) > 0 && isHelpArg(args[0]) {
+		return ErrHelpRequested
+	}
+
 	subCmd := "primary"
 	if len(args) > 0 {
 		subCmd = args[0]
