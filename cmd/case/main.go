@@ -1,23 +1,13 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"os"
 
 	"github.com/khinshankhan/yui/cmd/case/casecli"
+	"github.com/khinshankhan/yui/lib/cli"
 )
 
 func main() {
-	if err := casecli.Run(os.Args[1:]); err != nil {
-		if errors.Is(err, casecli.ErrHelpRequested) {
-			fmt.Fprintln(os.Stdout, casecli.Help("case"))
-			os.Exit(0)
-		}
-		fmt.Fprintf(os.Stderr, "Error: %v\n\n", err)
-		fmt.Fprintln(os.Stderr, casecli.Help("case"))
-		os.Exit(1)
-	}
-
-	os.Exit(0)
+	root := casecli.NewCommand("case")
+	os.Exit(cli.Execute(root, os.Args[1:], os.Stdout, os.Stderr))
 }

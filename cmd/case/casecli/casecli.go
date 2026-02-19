@@ -1,63 +1,51 @@
 package casecli
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
 	"strings"
 
 	"github.com/khinshankhan/yui/lib/caseconv"
+	"github.com/khinshankhan/yui/lib/cli"
 )
 
-var ErrHelpRequested = errors.New("help requested")
-
-func isHelpArg(arg string) bool {
-	switch arg {
-	case "help", "-h", "--help":
-		return true
-	default:
-		return false
-	}
+func NewCommand(name string, aliases ...string) *cli.Command {
+	return cli.New(name, "Text case conversion tools").
+		WithAliases(aliases...).
+		WithArgs(cli.VariadicArg("conversion"), cli.RequiredArg("text")).
+		WithSections(
+			cli.Section{
+				Title: "CONVERSIONS",
+				Lines: []string{
+					"lower      Convert to lowercase",
+					"upper      Convert to UPPERCASE",
+					"kebab      Convert to kebab-case",
+					"snake      Convert to snake_case",
+					"camel      Convert to camelCase",
+					"pascal     Convert to PascalCase",
+				},
+			},
+			cli.Section{
+				Title: "CHAINING",
+				Lines: []string{
+					"Chain multiple conversions by using multiple conversion tokens.",
+					"Conversions are applied left-to-right.",
+				},
+			},
+		).
+		WithExamples(
+			"%cmd% lower \"Hello World\"             # hello world",
+			"%cmd% kebab \"Hello World\"             # hello-world",
+			"%cmd% snake upper \"Hello World\"       # HELLO_WORLD",
+			"echo \"Hello World\" | %cmd% kebab      # hello-world",
+		).
+		WithRun(run)
 }
 
-func Help(app string) string {
-	help := `%s - Text case conversion tools
-
-USAGE:
-    %s [flags] <text>
-    echo "text" | %s [flags]
-
-SUBCOMMANDS:
-    help             Show this help message
-
-CONVERSIONS:
-    lower      Convert to lowercase
-    upper      Convert to UPPERCASE
-    kebab      Convert to kebab-case
-    snake      Convert to snake_case
-    camel      Convert to camelCase
-    pascal     Convert to PascalCase
-
-CHAINING:
-    Chain multiple conversions by using multiple flags.
-    Conversions are applied left-to-right.
-
-EXAMPLES:
-    %s lower "Hello World"             # hello world
-    %s kebab "Hello World"             # hello-world
-    %s snake upper "Hello World"       # HELLO_WORLD
-    echo "Hello World" | %s kebab      # hello-world`
-
-	return strings.ReplaceAll(help, "%s", app)
-}
-
-func Run(args []string) error {
+func run(ctx *cli.Context, args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("at least one argument is required")
-	}
-	if len(args) == 1 && isHelpArg(args[0]) {
-		return ErrHelpRequested
 	}
 
 	var (
@@ -82,6 +70,6 @@ func Run(args []string) error {
 		input = caseconv.Convert(input, mode)
 	}
 
-	fmt.Println(input)
+	fmt.Fprintln(ctx.Stdout, input)
 	return nil
 }

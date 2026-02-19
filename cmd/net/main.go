@@ -1,23 +1,13 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"os"
 
 	"github.com/khinshankhan/yui/cmd/net/netcli"
+	"github.com/khinshankhan/yui/lib/cli"
 )
 
 func main() {
-	if err := netcli.Run(os.Args[1:]); err != nil {
-		if errors.Is(err, netcli.ErrHelpRequested) {
-			fmt.Fprintln(os.Stdout, netcli.Help("net"))
-			os.Exit(0)
-		}
-		fmt.Fprintf(os.Stderr, "Error: %v\n\n", err)
-		fmt.Fprintln(os.Stderr, netcli.Help("net"))
-		os.Exit(1)
-	}
-
-	os.Exit(0)
+	root := netcli.NewCommand("net")
+	os.Exit(cli.Execute(root, os.Args[1:], os.Stdout, os.Stderr))
 }

@@ -1,103 +1,73 @@
 package netcli
 
 import (
-	"errors"
 	"fmt"
-	"strings"
 
+	"github.com/khinshankhan/yui/lib/cli"
 	"github.com/khinshankhan/yui/lib/nettools"
 )
 
-var ErrHelpRequested = errors.New("help requested")
+func NewCommand(name string, aliases ...string) *cli.Command {
+	ip := cli.New("ip", "Get local IP addresses").
+		WithAliases("i").
+		WithSubcommandName("type").
+		WithExample("Get primary local IP").
+		WithExample("Get all interfaces and IPs", "all").
+		WithDefaultSubcommand("primary").
+		Register(
+			cli.
+				New("primary", "Get primary local IP").
+				WithAliases("p").
+				WithRun(runPrimary),
+			cli.
+				New("all", "Get all interfaces and IPs").
+				WithAliases("a").
+				WithRun(runAll),
+		)
 
-func isHelpArg(arg string) bool {
-	switch arg {
-	case "help", "-h", "--help":
-		return true
-	default:
-		return false
-	}
+	return cli.New(name, "Network/IP tools").
+		WithAliases(aliases...).
+		WithExample("Show help", "help").
+		WithExample("Get primary local IP", "ip").
+		WithExample("Get all IPs", "ip", "all").
+		Register(ip)
 }
 
-func Help(app string) string {
-	help := `%s - Network/IP tools
-
-USAGE:
-    %s <subcommand> [arguments]
-
-
-SUBCOMMANDS:
-    help               Show this help message
-
-    ip [type]          Get local IP addresses
-        primary, p     Get primary local IP (default)
-        all, a         Get all interfaces and IPs
-
-EXAMPLES:
-    %s help                      # Show help
-    %s ip                        # Get primary local IP
-    %s ip all                    # Get all IPs
-
-Use "%s <subcommand> help" for more information.`
-
-	return strings.ReplaceAll(help, "%s", app)
-}
-
-func Run(args []string) error {
-	if len(args) == 0 {
-		return fmt.Errorf("subcommand required")
-	}
-	if isHelpArg(args[0]) {
-		return ErrHelpRequested
-	}
-
-	switch args[0] {
-	case "ip", "i":
-		return runIP(args[1:])
-	default:
-		return fmt.Errorf("unknown net subcommand: %s", args[0])
-	}
-}
-
-func runIP(args []string) error {
-	if len(args) > 0 && isHelpArg(args[0]) {
-		return ErrHelpRequested
-	}
-
-	subCmd := "primary"
+func runPrimary(ctx *cli.Context, args []string) error {
 	if len(args) > 0 {
-		subCmd = args[0]
+		return fmt.Errorf("unknown %s subcommand: %s", ctx.Command.Name, args[0])
 	}
 
-	switch subCmd {
-	case "primary", "p":
-		ip, err := nettools.GetPrimaryLocalIP()
-		if err != nil {
-			return err
-		}
-		fmt.Println(ip)
-		return nil
-	case "all", "a":
-		interfaces, err := nettools.GetLocalIPs()
-		if err != nil {
-			return err
-		}
-
-		for _, iface := range interfaces {
-			fmt.Printf("%s:\n", iface.Name)
-			if iface.MacAddress != "" {
-				fmt.Printf("  MAC: %s\n", iface.MacAddress)
-			}
-			for _, ip := range iface.IPs {
-				ipType := "IPv4"
-				if ip.IsIPv6 {
-					ipType = "IPv6"
-				}
-				fmt.Printf("  %s: %s\n", ipType, ip.Address)
-			}
-		}
-		return nil
-	default:
-		return fmt.Errorf("unknown ip subcommand: %s", subCmd)
+	ip, err := nettools.GetPrimaryLocalIP()
+	if err != nil {
+		return err
 	}
+	fmt.Fprintln(ctx.Stdout, ip)
+	return nil
+}
+
+func runAll(ctx *cli.Context, args []string) error {
+	if len(args) > 0 {
+		return fmt.Errorf("unknown %s subcommand: %s", ctx.Command.Name, args[0])
+	}
+
+	interfaces, err := nettools.GetLocalIPs()
+	if err != nil {
+		return err
+	}
+
+	for _, iface := range interfaces {
+		fmt.Fprintf(ctx.Stdout, "%s:\n", iface.Name)
+		if iface.MacAddress != "" {
+			fmt.Fprintf(ctx.Stdout, "  MAC: %s\n", iface.MacAddress)
+		}
+		for _, ip := range iface.IPs {
+			ipType := "IPv4"
+			if ip.IsIPv6 {
+				ipType = "IPv6"
+			}
+			fmt.Fprintf(ctx.Stdout, "  %s: %s\n", ipType, ip.Address)
+		}
+	}
+	return nil
 }
