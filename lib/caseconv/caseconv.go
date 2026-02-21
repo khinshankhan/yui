@@ -70,6 +70,23 @@ func Convert(input, mode string) string {
 		return parts[0] + strings.Join(parts[1:], "")
 	case "words":
 		return strings.Join(splitWords(input), " ")
+	// Title case styles
+	case "title-apa", "apa":
+		return ToTitleStyle(input, StyleAPA)
+	case "title-chicago", "chicago", "cmos":
+		return ToTitleStyle(input, StyleChicago)
+	case "title-mla", "mla":
+		return ToTitleStyle(input, StyleMLA)
+	case "title-ap", "ap":
+		return ToTitleStyle(input, StyleAP)
+	case "title-bluebook", "bluebook", "bb":
+		return ToTitleStyle(input, StyleBluebook)
+	case "title-ama", "ama":
+		return ToTitleStyle(input, StyleAMA)
+	case "title-nytimes", "nytimes", "nyt":
+		return ToTitleStyle(input, StyleNYTimes)
+	case "title-wikipedia", "wikipedia", "wiki":
+		return ToTitleStyle(input, StyleWikipedia)
 	default:
 		return input
 	}

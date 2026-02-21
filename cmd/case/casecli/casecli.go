@@ -27,6 +27,19 @@ func NewCommand(name string, aliases ...string) *cli.Command {
 				},
 			},
 			cli.Section{
+				Title: "TITLE CASE STYLES",
+				Lines: []string{
+					"apa        APA 7th Edition style",
+					"chicago    Chicago Manual of Style 18th Edition",
+					"mla        MLA Handbook 9th Edition",
+					"ap         Associated Press 2020 Edition",
+					"bluebook   Bluebook 21st Edition",
+					"ama        AMA Manual of Style 11th Edition",
+					"nytimes    NY Times style",
+					"wikipedia  Wikipedia style",
+				},
+			},
+			cli.Section{
 				Title: "CHAINING",
 				Lines: []string{
 					"Chain multiple conversions by using multiple conversion tokens.",
