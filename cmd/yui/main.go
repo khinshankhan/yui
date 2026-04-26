@@ -7,6 +7,7 @@ import (
 	"github.com/khinshankhan/yui/cmd/clip/clipcli"
 	"github.com/khinshankhan/yui/cmd/color/colorcli"
 	"github.com/khinshankhan/yui/cmd/net/netcli"
+	"github.com/khinshankhan/yui/cmd/slug/slugcli"
 	"github.com/khinshankhan/yui/lib/cli"
 )
 
@@ -15,6 +16,7 @@ func main() {
 		WithSubcommandName("command").
 		Register(
 			casecli.NewCommand("case", "c"),
+			slugcli.NewCommand("slug", "s"),
 			clipcli.NewCommand("clip", "clipboard"),
 			clipcli.NewCopyCommand("copy"),
 			clipcli.NewPasteCommand("paste"),

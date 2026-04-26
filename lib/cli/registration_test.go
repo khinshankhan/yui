@@ -7,6 +7,7 @@ import (
 	"github.com/khinshankhan/yui/cmd/clip/clipcli"
 	"github.com/khinshankhan/yui/cmd/color/colorcli"
 	"github.com/khinshankhan/yui/cmd/net/netcli"
+	"github.com/khinshankhan/yui/cmd/slug/slugcli"
 	"github.com/khinshankhan/yui/lib/cli"
 )
 
@@ -18,6 +19,10 @@ func TestCommandRegistrationsAreValid(t *testing.T) {
 		{
 			name: "case",
 			cmd:  casecli.NewCommand("case", "c"),
+		},
+		{
+			name: "slug",
+			cmd:  slugcli.NewCommand("slug", "s"),
 		},
 		{
 			name: "color",
@@ -45,6 +50,7 @@ func TestCommandRegistrationsAreValid(t *testing.T) {
 				WithSubcommandName("command").
 				Register(
 					casecli.NewCommand("case", "c"),
+					slugcli.NewCommand("slug", "s"),
 					clipcli.NewCommand("clip", "clipboard"),
 					clipcli.NewCopyCommand("copy"),
 					clipcli.NewPasteCommand("paste"),
