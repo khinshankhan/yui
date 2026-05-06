@@ -1,6 +1,6 @@
 //go:build unix
 
-package clipboard
+package sysexec
 
 import (
 	"os/exec"

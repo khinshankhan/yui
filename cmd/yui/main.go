@@ -8,6 +8,7 @@ import (
 	"github.com/khinshankhan/yui/cmd/color/colorcli"
 	"github.com/khinshankhan/yui/cmd/net/netcli"
 	"github.com/khinshankhan/yui/cmd/slug/slugcli"
+	"github.com/khinshankhan/yui/cmd/sound/soundcli"
 	"github.com/khinshankhan/yui/lib/cli"
 )
 
@@ -22,6 +23,7 @@ func main() {
 			clipcli.NewPasteCommand("paste"),
 			colorcli.NewCommand("color", "col"),
 			netcli.NewCommand("net", "n"),
+			soundcli.NewCommand("sound", "s"),
 		)
 
 	os.Exit(cli.Execute(root, os.Args[1:], os.Stdout, os.Stderr))

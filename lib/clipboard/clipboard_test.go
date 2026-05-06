@@ -3,21 +3,23 @@ package clipboard
 import (
 	"os"
 	"testing"
+
+	"github.com/khinshankhan/yui/lib/sysexec"
 )
 
 func TestDetectBackendPrefersWaylandWhenAvailable(t *testing.T) {
 	t.Setenv("WAYLAND_DISPLAY", "wayland-1")
 	t.Setenv("DISPLAY", ":0")
 
-	origGOOS := goos
-	origLookPath := lookPath
+	origGOOS := sysexec.GOOS
+	origLookPath := sysexec.LookPath
 	t.Cleanup(func() {
-		goos = origGOOS
-		lookPath = origLookPath
+		sysexec.GOOS = origGOOS
+		sysexec.LookPath = origLookPath
 	})
 
-	goos = "linux"
-	lookPath = func(file string) (string, error) {
+	sysexec.GOOS = "linux"
+	sysexec.LookPath = func(file string) (string, error) {
 		switch file {
 		case "wl-copy", "wl-paste", "xclip", "xsel":
 			return "/usr/bin/" + file, nil
@@ -40,15 +42,15 @@ func TestDetectBackendFallsBackToXclip(t *testing.T) {
 	t.Setenv("WAYLAND_DISPLAY", "")
 	t.Setenv("DISPLAY", ":0")
 
-	origGOOS := goos
-	origLookPath := lookPath
+	origGOOS := sysexec.GOOS
+	origLookPath := sysexec.LookPath
 	t.Cleanup(func() {
-		goos = origGOOS
-		lookPath = origLookPath
+		sysexec.GOOS = origGOOS
+		sysexec.LookPath = origLookPath
 	})
 
-	goos = "linux"
-	lookPath = func(file string) (string, error) {
+	sysexec.GOOS = "linux"
+	sysexec.LookPath = func(file string) (string, error) {
 		switch file {
 		case "xclip":
 			return "/usr/bin/" + file, nil
@@ -68,15 +70,15 @@ func TestDetectBackendFallsBackToXclip(t *testing.T) {
 }
 
 func TestDetectBackendOnWindowsUsesPowerShell(t *testing.T) {
-	origGOOS := goos
-	origLookPath := lookPath
+	origGOOS := sysexec.GOOS
+	origLookPath := sysexec.LookPath
 	t.Cleanup(func() {
-		goos = origGOOS
-		lookPath = origLookPath
+		sysexec.GOOS = origGOOS
+		sysexec.LookPath = origLookPath
 	})
 
-	goos = "windows"
-	lookPath = func(file string) (string, error) {
+	sysexec.GOOS = "windows"
+	sysexec.LookPath = func(file string) (string, error) {
 		if file == "powershell.exe" {
 			return "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", nil
 		}
